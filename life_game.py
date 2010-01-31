@@ -12,20 +12,23 @@ from pygame.locals import *
 
 class Cell(object):
     """Individual cell"""
+
     def __init__(self):
         self.alive_curr_gen = False
         self.alive_next_gen = False
         self.generation_cnt = 0
 
+
 class GameTable(object):
     """Game of life table"""
+
     def __init__(self, width, height, scale):
         self.screen = None
         self.scale_screen = None
         self.cells = []
 
-        self.xscale = width/scale
-        self.yscale = height/scale
+        self.xscale = width / scale
+        self.yscale = height / scale
 
         # 2-D array that cooresponds to pixels on surface
         self.px_arr = Numeric.zeros((self.xscale, self.yscale), 'i')
@@ -35,7 +38,7 @@ class GameTable(object):
             self.cells.append([])
             for yy in range(self.yscale):
                 self.cells[xx].append(Cell())
-        
+
         self.__init_graphics(width, height)
         self.__init_configuration()
         self.__prepare_generation()
@@ -68,9 +71,8 @@ class GameTable(object):
         pygame.surfarray.blit_array(self.scale_screen, self.px_arr)
         temp = pygame.transform.scale(self.scale_screen,
                                         self.screen.get_size())
-        self.screen.blit(temp, (0,0))
+        self.screen.blit(temp, (0, 0))
         pygame.display.update()
-        return
 
     def __prepare_generation(self):
         """Apply rules of life to each cell"""
@@ -130,7 +132,7 @@ class GameTable(object):
         return neighbors
 
     def advance_generation(self):
-        """Advance all cells by 1 generation""" 
+        """Advance all cells by 1 generation"""
         self.__prepare_generation()
 
         for xx in range(self.xscale):
@@ -154,9 +156,11 @@ class GameTable(object):
         pygame.display.quit()
         pygame.quit()
 
+
 def setup():
     """Setup table to simulate game"""
     return GameTable(640, 480, 4)
+
 
 def run(table):
     """Run through game of life simulation"""
@@ -167,13 +171,15 @@ def run(table):
             break
         table.advance_generation()
 
-def stop_game(events): 
+
+def stop_game(events):
     """Return True if QUIT event received, False otherwise"""
-    for event in events: 
-        if event.type == QUIT: 
+    for event in events:
+        if event.type == QUIT:
             return True
 
     return False
+
 
 if __name__ == "__main__":
     table = setup()
