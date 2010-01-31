@@ -6,11 +6,6 @@ import time
 import pygame
 from pygame.locals import *
 
-white = 255,240,200
-black = 20,20, 40
-red = 255, 20, 40
-green = 20,255,40
-blue = 20,20,255
 
 class Cell(object):
     """Individual cell"""
@@ -21,37 +16,45 @@ class Cell(object):
 
 class GameTable(object):
     """Game of life table"""
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, width, height, scale):
+        self.screen = None
+        self.scale_screen = None
         self.cells = []
 
-        SCALE = 4
-        self.xscale = self.x/SCALE
-        self.yscale = self.y/SCALE
+        self.xscale = width/scale
+        self.yscale = height/scale
 
-        pygame.init()
-        self.screen = pygame.display.set_mode((self.x, self.y), 0, 8)
-        self.scale_screen = pygame.surface.Surface((self.xscale, self.yscale),
-                                                    0, 8)
-
-        self.screen.fill(black)
-        self.scale_screen.fill(black)
-        self.screen.set_palette( [black, red, green, blue, white] )
-        self.scale_screen.set_palette( [black, red, green, blue, white] )
-
+        # 2-D array that cooresponds to pixels on surface
         self.px_arr = Numeric.zeros((self.xscale, self.yscale), 'i')
 
-        # Create 2-D array of cells to coorespond to pixel array
+        # Create 2-D list of cells to coorespond to pixel array
         for xx in range(self.xscale):
             self.cells.append([])
             for yy in range(self.yscale):
                 self.cells[xx].append(Cell())
         
+        self.__init_graphics(width, height)
         self.__init_configuration()
         self.__prepare_generation()
         self.advance_generation()
         self.__drawfield()
+
+    def __init_graphics(self, width, height):
+        """Setup graphics (game board), etc."""
+        pygame.init()
+        self.screen = pygame.display.set_mode((width, height), 0, 8)
+        self.scale_screen = pygame.surface.Surface((self.xscale, self.yscale),
+                                                    0, 8)
+        white = 255, 255, 255
+        black = 0, 0, 0
+        red = 255, 0, 0
+        green = 0, 255, 0
+        blue = 0, 0, 255
+
+        self.screen.fill(black)
+        self.scale_screen.fill(black)
+        self.screen.set_palette([black, red, green, blue, white])
+        self.scale_screen.set_palette([black, red, green, blue, white])
 
     def __init_configuration(self):
         """Setup initial alive cells"""
@@ -132,20 +135,19 @@ class GameTable(object):
                 self.cells[xx][yy].alive_curr_gen = \
                     self.cells[xx][yy].alive_next_gen
 
-                if self.cells[xx][yy].alive_curr_gen:
-                    if self.cells[xx][yy].generation_cnt == 1:
-                        self.px_arr[xx][yy] = 2
-                    elif self.cells[xx][yy].generation_cnt == 2:
-                        self.px_arr[xx][yy] = 3
+                color = 0
+                if self.cells[xx][yy].generation_cnt > 0:
+                    if self.cells[xx][yy].generation_cnt >= 4:
+                        color = 4
                     else:
-                        self.px_arr[xx][yy] = 1
-                else:
-                    self.px_arr[xx][yy] = 0
+                        color = self.cells[xx][yy].generation_cnt
+
+                self.px_arr[xx][yy] = color
 
         self.__drawfield()
 
 def setup():
-    return GameTable(640,480)
+    return GameTable(640,480, 4)
 
 def run(table):
     while True:
