@@ -1,8 +1,11 @@
 #!/opt/local/bin/python2.4
 
-import Numeric
-import sys
+"""
+Small driver program to simulate a game of Conway's life.
+"""
+
 import time
+import Numeric
 import pygame
 from pygame.locals import *
 
@@ -45,11 +48,11 @@ class GameTable(object):
         self.screen = pygame.display.set_mode((width, height), 0, 8)
         self.scale_screen = pygame.surface.Surface((self.xscale, self.yscale),
                                                     0, 8)
-        white = 255, 255, 255
-        black = 0, 0, 0
-        red = 255, 0, 0
-        green = 0, 255, 0
-        blue = 0, 0, 255
+        white = (255, 255, 255)
+        black = (0, 0, 0)
+        red = (255, 0, 0)
+        green = (0, 255, 0)
+        blue = (0, 0, 255)
 
         self.screen.fill(black)
         self.scale_screen.fill(black)
@@ -88,25 +91,25 @@ class GameTable(object):
                 else:
                     self.cells[xx][yy].generation_cnt = 0
 
-    def __count_neighbors(self, x, y):
+    def __count_neighbors(self, xx, yy):
         """Count neighbors for given cell"""
 
         neighbors = 0
-        left = x - 1
-        right = x + 1
-        up = y - 1
-        down = y + 1
+        left = xx - 1
+        right = xx + 1
+        up = yy - 1
+        down = yy + 1
 
         # Check horizontal neighbors
-        if left >= 0 and self.cells[left][y].alive_curr_gen:
+        if left >= 0 and self.cells[left][yy].alive_curr_gen:
             neighbors += 1
-        if right < self.xscale and self.cells[right][y].alive_curr_gen:
+        if right < self.xscale and self.cells[right][yy].alive_curr_gen:
             neighbors += 1
 
         # Check vertial neighbors
-        if up >= 0 and self.cells[x][up].alive_curr_gen:
+        if up >= 0 and self.cells[xx][up].alive_curr_gen:
             neighbors += 1
-        if down < self.yscale and self.cells[x][down].alive_curr_gen:
+        if down < self.yscale and self.cells[xx][down].alive_curr_gen:
             neighbors += 1
 
         # Check top diagnoal neighbors
@@ -146,27 +149,33 @@ class GameTable(object):
 
         self.__drawfield()
 
+    def quit(self):
+        """Stop simulating game and cleanup graphics"""
+        pygame.display.quit()
+        pygame.quit()
+
 def setup():
-    return GameTable(640,480, 4)
+    """Setup table to simulate game"""
+    return GameTable(640, 480, 4)
 
 def run(table):
+    """Run through game of life simulation"""
     while True:
+        # FIXME: Catch keyboard
         time.sleep(1)
-        input(pygame.event.get())
+        if stop_game(pygame.event.get()):
+            break
         table.advance_generation()
 
-def input(events): 
-   for event in events: 
-      if event.type == QUIT: 
-         sys.exit(0) 
-      else: 
-         print event 
+def stop_game(events): 
+    """Return True if QUIT event received, False otherwise"""
+    for event in events: 
+        if event.type == QUIT: 
+            return True
 
-def tearDown():
-    pygame.display.quit()
-    pygame.quit()
+    return False
 
 if __name__ == "__main__":
     table = setup()
     run(table)
-    tearDown()
+    table.quit()
