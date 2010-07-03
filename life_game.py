@@ -4,10 +4,11 @@
 Small driver program to simulate a game of Conway's life.
 """
 
+import sys
 import time
 import Numeric
 import pygame
-from pygame.locals import *
+from pygame.locals import QUIT
 
 
 class Cell(object):
@@ -22,7 +23,7 @@ class Cell(object):
 class GameTable(object):
     """Game of life table"""
 
-    def __init__(self, width, height, scale):
+    def __init__(self, width, height, scale, seed_file=None):
         self.screen = None
         self.scale_screen = None
         self.cells = []
@@ -40,7 +41,7 @@ class GameTable(object):
                 self.cells[xx].append(Cell())
 
         self.__init_graphics(width, height)
-        self.__init_configuration()
+        self.__init_configuration(seed_file)
         self.__prepare_generation()
         self.advance_generation()
         self.__drawfield()
@@ -62,12 +63,48 @@ class GameTable(object):
         self.screen.set_palette([black, red, green, blue, white])
         self.scale_screen.set_palette([black, red, green, blue, white])
 
-    def __init_configuration(self):
+    def __init_configuration(self, seed_file):
         """Setup initial alive cells"""
+
+        if seed_file == None:
+            return self.__default_configuration()
+
+        return self.__parse_configuration_file(seed_file)
+
+    def __default_configuration(self):
+        """Setup hard-coded default alive cells"""
         for ii in range(20):
             self.cells[ii][50].alive_curr_gen = True
 
+    def __parse_configuration_file(self, seed_file):
+        """Parse given configuration file for starting generation"""
+        try:
+            file_obj = open(seed_file, 'r')
+        except IOError:
+            print "Unable to open file '%s', defaulting seed " % (seed_file)
+            return self.__default_configuration()
+
+        xx = 0
+        yy = 0
+
+        for line in file_obj:
+            # Signals 'comment' line to be skipped
+            if line[0] != "!":
+                for char in line:
+                    if char == "O":
+                        self.cells[xx][yy].alive_curr_gen = True
+                    xx = xx + 1
+                    if xx > self.xscale:
+                        raise IOError("File width (%d) too wide for game" \
+                                        "table width (%d)" % (xx, self.xscale))
+            xx = 0
+            yy = yy + 1
+            if yy > self.yscale:
+                raise IOError("File height (%d) too large for game " \
+                                "table height (%d)" % (yy, self.yscale))
+
     def __drawfield(self):
+        """Draw board"""
         pygame.surfarray.blit_array(self.scale_screen, self.px_arr)
         temp = pygame.transform.scale(self.scale_screen,
                                         self.screen.get_size())
@@ -151,15 +188,10 @@ class GameTable(object):
 
         self.__drawfield()
 
-    def quit(self):
-        """Stop simulating game and cleanup graphics"""
-        pygame.display.quit()
-        pygame.quit()
 
-
-def setup():
+def setup(filename):
     """Setup table to simulate game"""
-    return GameTable(640, 480, 4)
+    return GameTable(640, 480, 4, filename)
 
 
 def run(table):
@@ -167,21 +199,28 @@ def run(table):
     while True:
         # FIXME: Catch keyboard
         time.sleep(1)
-        if stop_game(pygame.event.get()):
-            break
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                return
+
         table.advance_generation()
 
+def teardown():
+    """Stop simulating game and cleanup graphics"""
+    pygame.display.quit()
+    pygame.quit()
 
-def stop_game(events):
-    """Return True if QUIT event received, False otherwise"""
-    for event in events:
-        if event.type == QUIT:
-            return True
 
-    return False
+def main():
+    """Main entry point for driver program"""
+    filename = None
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
 
+    table = setup(filename)
+    run(table)
+    teardown()
 
 if __name__ == "__main__":
-    table = setup()
-    run(table)
-    table.quit()
+    main()
