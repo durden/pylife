@@ -40,13 +40,13 @@ class GameTable(object):
             for yy in range(self.yscale):
                 self.cells[xx].append(Cell())
 
-        self.__init_graphics(width, height)
-        self.__init_configuration(seed_file)
-        self.__prepare_generation()
+        self._init_graphics(width, height)
+        self._init_configuration(seed_file)
+        self._prepare_generation()
         self.advance_generation()
-        self.__drawfield()
+        self._drawfield()
 
-    def __init_graphics(self, width, height):
+    def _init_graphics(self, width, height):
         """Setup graphics (game board), etc."""
         pygame.init()
         self.screen = pygame.display.set_mode((width, height), 0, 8)
@@ -63,26 +63,26 @@ class GameTable(object):
         self.screen.set_palette([black, red, green, blue, white])
         self.scale_screen.set_palette([black, red, green, blue, white])
 
-    def __init_configuration(self, seed_file):
+    def _init_configuration(self, seed_file):
         """Setup initial alive cells"""
 
         if seed_file == None:
-            return self.__default_configuration()
+            return self._default_configuration()
 
-        return self.__parse_configuration_file(seed_file)
+        return self._parse_configuration_file(seed_file)
 
-    def __default_configuration(self):
+    def _default_configuration(self):
         """Setup hard-coded default alive cells"""
         for ii in range(20):
             self.cells[ii][50].alive_curr_gen = True
 
-    def __parse_configuration_file(self, seed_file):
+    def _parse_configuration_file(self, seed_file):
         """Parse given configuration file for starting generation"""
         try:
             file_obj = open(seed_file, 'r')
         except IOError:
             print "Unable to open file '%s', defaulting seed " % (seed_file)
-            return self.__default_configuration()
+            return self._default_configuration()
 
         xx = 0
         yy = 0
@@ -103,7 +103,7 @@ class GameTable(object):
                 raise IOError("File height (%d) too large for game " \
                                 "table height (%d)" % (yy, self.yscale))
 
-    def __drawfield(self):
+    def _drawfield(self):
         """Draw board"""
         pygame.surfarray.blit_array(self.scale_screen, self.px_arr)
         temp = pygame.transform.scale(self.scale_screen,
@@ -111,11 +111,11 @@ class GameTable(object):
         self.screen.blit(temp, (0, 0))
         pygame.display.update()
 
-    def __prepare_generation(self):
+    def _prepare_generation(self):
         """Apply rules of life to each cell"""
         for xx in range(self.xscale):
             for yy in range(self.yscale):
-                cnt = self.__count_neighbors(xx, yy)
+                cnt = self._count_neighbors(xx, yy)
                 if self.cells[xx][yy].alive_curr_gen:
                     if cnt < 2 or cnt > 3:
                         self.cells[xx][yy].alive_next_gen = False
@@ -130,7 +130,7 @@ class GameTable(object):
                 else:
                     self.cells[xx][yy].generation_cnt = 0
 
-    def __count_neighbors(self, xx, yy):
+    def _count_neighbors(self, xx, yy):
         """Count neighbors for given cell"""
 
         neighbors = 0
@@ -170,7 +170,7 @@ class GameTable(object):
 
     def advance_generation(self):
         """Advance all cells by 1 generation"""
-        self.__prepare_generation()
+        self._prepare_generation()
 
         for xx in range(self.xscale):
             for yy in range(self.yscale):
@@ -186,7 +186,7 @@ class GameTable(object):
 
                 self.px_arr[xx][yy] = color
 
-        self.__drawfield()
+        self._drawfield()
 
 
 def setup(filename):
