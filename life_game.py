@@ -42,6 +42,7 @@ class GameTable(object):
 
         self._init_graphics(width, height)
         self._init_configuration(seed_file)
+        self._center_on_alive_cells()
         self._prepare_generation()
         self.advance_generation()
         self._drawfield()
@@ -187,6 +188,54 @@ class GameTable(object):
                 self.px_arr[xx][yy] = color
 
         self._drawfield()
+
+    def _center_on_alive_cells(self):
+        """Center the table on the alive cells"""
+
+        # Initialize min and max to opposite extremes
+        x_min = self.xscale
+        x_max = 0
+        y_min = self.yscale
+        y_max = 0
+
+        # Find the bounds of the alive cells
+        for xx in range(self.xscale):
+            for yy in range(self.yscale):
+                if self.cells[xx][yy].alive_curr_gen:
+                    if yy > y_max:
+                        y_max = yy
+                    if yy < y_min:
+                        y_min = yy
+                    if xx > x_max:
+                        x_max = xx
+                    if xx < x_min:
+                        x_min = xx
+
+        # Shift right
+        while self.xscale - x_max > x_min + 1:
+            x_max = x_max + 1
+            x_min = x_min + 1
+            self.cells.insert(0, self.cells.pop())
+        else:
+            # Shift left
+            while x_min > self.xscale - x_max + 1:
+                x_min = x_min - 1
+                x_max = x_max - 1
+                self.cells.append(self.cells.pop(0))
+
+        # Shift up
+        while self.yscale - y_max > y_min + 1:
+            y_max = y_max + 1
+            y_min = y_min + 1
+            for xx in range(self.xscale):
+                self.cells[xx].insert(0, self.cells[xx].pop())
+        else:
+            # Shift down
+            while y_min > self.yscale - y_max + 1:
+                y_max = y_max - 1
+                y_min = y_min - 1
+                for xx in range(self.xscale):
+                    self.cells[xx].append(self.cells[xx].pop(0))
 
 
 def setup(filename):
