@@ -1,6 +1,10 @@
 This is my quick python implementation of
 [Conway's Game of Life](http://en.wikipedia.org/wiki/Conway's_Game_of_Life).
 
+## Seed files
+- Source includes seed_files directory with 400+ initial seed files
+- All files came from [bitstorm.org's hard work](http://www.bitstorm.org/gameoflife/lexicon/).
+
 ## Requirements/Limitations:
 
 - Hard-coded to use python 2.4 and hard-coded python location (I'm using
