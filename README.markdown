@@ -15,6 +15,5 @@ This is my quick python implementation of
   simulations without worrying about underlying game code
 - Don't force simulation code to know about pygame module
 - More colors
-- Reading initial cell configuration from files specified via command line
 - Start/stop buttons on screen
 - Unit tests for game code
