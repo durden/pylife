@@ -97,11 +97,11 @@ class GameTable(object):
                     if xx > self.xscale:
                         raise IOError("File width (%d) too wide for game" \
                                         "table width (%d)" % (xx, self.xscale))
-            xx = 0
-            yy = yy + 1
-            if yy > self.yscale:
-                raise IOError("File height (%d) too large for game " \
-                                "table height (%d)" % (yy, self.yscale))
+                xx = 0
+                yy = yy + 1
+                if yy > self.yscale:
+                    raise IOError("File height (%d) too large for game " \
+                                    "table height (%d)" % (yy, self.yscale))
 
     def _drawfield(self):
         """Draw board"""
