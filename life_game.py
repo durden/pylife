@@ -152,14 +152,14 @@ class GameTable(object):
         if down < self.yscale and self.cells[xx][down].alive_curr_gen:
             neighbors += 1
 
-        # Check top diagnoal neighbors
+        # Check top diagonal neighbors
         if left >= 0 and up >= 0 and self.cells[left][up].alive_curr_gen:
             neighbors += 1
-        if right < self.xscale and up < self.yscale and \
+        if right < self.xscale and up >= 0 and \
                 self.cells[right][up].alive_curr_gen:
             neighbors += 1
 
-        # Check bottom diagnoal neighbors
+        # Check bottom diagonal neighbors
         if left >= 0 and down < self.yscale and \
                 self.cells[left][down].alive_curr_gen:
             neighbors += 1
