@@ -34,6 +34,7 @@ def get_args():
     (options, args) = parser.parse_args()
     return options
 
+
 def main():
     """Main entry point for driver program"""
 
@@ -42,10 +43,11 @@ def main():
     # Python 2.4 doesn't allow except and finally clause together, so must
     # wrap with outer finally instead
     try:
-        # Run the game and always allow library to cleanup when user exits
+        # Run game and always allow library to cleanup when user exits
         try:
             game = Game(640, 480, 4, options.filename)
             run(game, options.secs)
+        # Catch keyboard so ctrl-c doesn't show nasty stack trace
         except KeyboardInterrupt:
             pass
     finally:
