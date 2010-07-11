@@ -7,6 +7,8 @@ Module to serve as a graphics library for pylife game simulation.
 import Numeric
 import pygame
 
+from pygame.locals import QUIT
+
 
 class Graphics(object):
     """Class handle graphics of pylife engine.  This class could (hopefully) be
@@ -58,6 +60,13 @@ class Graphics(object):
                                         self.screen.get_size())
         self.screen.blit(temp, (0, 0))
         pygame.display.update()
+
+        # Check to see if user clicked 'x' to quit and mask it as a
+        # keyboard interrupt so that upper levels of code don't have to
+        # know we are using pygame
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                raise KeyboardInterrupt
 
     def cleanup(self):
         """Stop simulating game and cleanup graphics"""
