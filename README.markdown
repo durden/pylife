@@ -15,9 +15,7 @@ This is my quick python implementation of
 ## Todo items:
 
 - Allow board dimensions and scale to be specified via command line.
-- Move game classes into separate module to allow for writing simple.
-  simulations without worrying about underlying game code
-- Don't force simulation code to know about pygame module
 - More colors
 - Start/stop buttons on screen
 - Unit tests for game code
+- Add command line option to switch between graphics implementations
