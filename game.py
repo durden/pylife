@@ -29,7 +29,7 @@ class Game(object):
         self.xscale = width / scale
         self.yscale = height / scale
 
-        # Create 2-D list of cells to coorespond to pixel array
+        # Create 2-D list of cells to handle all pixels
         for xx in range(self.xscale):
             self.cells.append([])
             for yy in range(self.yscale):
@@ -37,7 +37,6 @@ class Game(object):
 
         self._init_configuration(seed_file)
         self._center_on_alive_cells()
-        self._prepare_generation()
 
         self.graphics = graphics_lib.Graphics(width, height, self.xscale,
                                                 self.yscale)
